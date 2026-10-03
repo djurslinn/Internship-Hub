@@ -7,9 +7,6 @@ const S = {
   page: { display: 'flex', flexDirection: 'column' as const, gap: 20 },
   h1: { margin: 0, fontSize: 26, fontWeight: 800, color: '#0a2540', letterSpacing: -0.5 },
   card: { background: '#fff', borderRadius: 12, border: '1px solid #e5eaf0', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' },
-  taskHeader: { padding: '18px 20px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' },
-  taskTitle: { margin: 0, fontSize: 15, fontWeight: 700, color: '#0f172a' },
-  taskMeta: { margin: '4px 0 0', fontSize: 12, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 12 },
   taskBody: { padding: '0 20px 20px', borderTop: '1px solid #f0f4f8' },
   label: { display: 'block', fontSize: 12, fontWeight: 600, color: '#64748b', marginBottom: 6, marginTop: 16 },
   textarea: { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 13, resize: 'vertical' as const, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const },
@@ -78,6 +75,42 @@ export default function InternTasks() {
 
   return (
     <div style={S.page}>
+      <style>{`
+        .it-task-header {
+          padding: 18px 20px;
+          cursor: pointer;
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 16px;
+        }
+        .it-task-title {
+          margin: 0;
+          font-size: 15px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+        .it-task-meta {
+          margin: 4px 0 0;
+          font-size: 12px;
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 500px) {
+          .it-task-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+          }
+          .it-task-meta {
+            gap: 8px;
+          }
+        }
+      `}</style>
+
       <h1 style={S.h1}>My Tasks</h1>
       {tasks.map(task => {
         const sub = getSubmission(task.id);
@@ -87,16 +120,18 @@ export default function InternTasks() {
 
         return (
           <div key={task.id} style={S.card}>
-            <div style={{ ...S.taskHeader, background: isOpen ? '#f8fafc' : '#fff' }} onClick={() => setSelectedTask(isOpen ? null : task.id)}>
-              <div>
-                <p style={S.taskTitle}>{task.title}</p>
-                <div style={S.taskMeta}>
+            <div className="it-task-header" style={{ background: isOpen ? '#f8fafc' : '#fff' }} onClick={() => setSelectedTask(isOpen ? null : task.id)}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p className="it-task-title">{task.title}</p>
+                <div className="it-task-meta">
                   <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Calendar size={12} /> Due {new Date(task.dueDate).toLocaleDateString()}</span>
                   <span style={{ fontWeight: 800, color: '#f59e0b', fontSize: 13, background: '#fef3c7', padding: '2px 8px', borderRadius: 12 }}>{task.points} pts</span>
                   <span style={{ fontWeight: 600, color: priorityColor, textTransform: 'capitalize' }}>{task.priority} priority</span>
                 </div>
               </div>
-              <StatusBadge status={status} />
+              <div style={{ flexShrink: 0 }}>
+                <StatusBadge status={status} />
+              </div>
             </div>
 
             {isOpen && (

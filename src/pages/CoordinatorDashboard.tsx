@@ -6,14 +6,10 @@ import CoordinatorTasks from './CoordinatorTasks';
 
 const S = {
   page: { display: 'flex', flexDirection: 'column' as const, gap: 24 },
-  h1: { margin: 0, fontSize: 26, fontWeight: 800, color: '#0a2540', letterSpacing: -0.5 },
-  sub: { margin: '4px 0 0', fontSize: 14, color: '#64748b' },
-  grid4: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 16 },
   card: { background: '#fff', borderRadius: 12, border: '1px solid #e5eaf0', padding: '20px 24px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' },
   cardLabel: { margin: 0, fontSize: 12, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' as const, letterSpacing: 0.8 },
   cardValue: { margin: '8px 0 0', fontSize: 32, fontWeight: 800, color: '#0a2540' },
   sectionTitle: { margin: '0 0 16px', fontSize: 17, fontWeight: 700, color: '#0a2540' },
-  row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderRadius: 10, border: '1px solid #f0f4f8', marginBottom: 8, background: '#fafcff' },
   badge: (color: string) => ({ display: 'inline-block', padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: color + '18', color }),
 };
 
@@ -28,12 +24,90 @@ const CoordinatorOverview = () => {
 
   return (
     <div style={S.page}>
+      <style>{`
+        .co-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+        .co-intern-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 16px;
+          border-radius: 10px;
+          border: 1px solid #f0f4f8;
+          margin-bottom: 8px;
+          background: #fafcff;
+          gap: 12px;
+        }
+        .co-intern-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
+          flex: 1;
+        }
+        .co-intern-right {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-shrink: 0;
+        }
+        .co-sub-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 16px;
+          border-radius: 10px;
+          border: 1px solid #f0f4f8;
+          margin-bottom: 8px;
+          background: #fafcff;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .co-h1 {
+          margin: 0;
+          font-size: 26px;
+          font-weight: 800;
+          color: #0a2540;
+          letter-spacing: -0.5px;
+        }
+        @media (max-width: 800px) {
+          .co-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 540px) {
+          .co-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .co-h1 {
+            font-size: 20px;
+          }
+          .co-intern-row {
+            flex-wrap: wrap;
+          }
+          .co-intern-right {
+            width: 100%;
+            justify-content: flex-start;
+          }
+        }
+        @media (max-width: 380px) {
+          .co-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
       <div>
-        <h1 style={S.h1}>Coordinator Dashboard</h1>
-        <p style={S.sub}>Frontend Engineering Program · Manage and monitor all interns.</p>
+        <h1 className="co-h1">Coordinator Dashboard</h1>
+        <p style={{ margin: '4px 0 0', fontSize: 14, color: '#64748b' }}>
+          Frontend Engineering Program · Manage and monitor all interns.
+        </p>
       </div>
 
-      <div style={S.grid4}>
+      <div className="co-grid">
         <div style={S.card}><p style={S.cardLabel}>Total Interns</p><p style={S.cardValue}>{interns.length}</p></div>
         <div style={S.card}><p style={S.cardLabel}>Total Tasks</p><p style={S.cardValue}>{tasks.length}</p></div>
         <div style={S.card}><p style={S.cardLabel}>Pending Reviews</p><p style={{ ...S.cardValue, color: '#f59e0b' }}>{pending}</p></div>
@@ -47,17 +121,17 @@ const CoordinatorOverview = () => {
           const internSubs = submissions.filter(s => s.internId === intern.id && s.status === 'approved').length;
           const pct = Math.round((internSubs / tasks.length) * 100);
           return (
-            <div key={intern.id} style={S.row}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div key={intern.id} className="co-intern-row">
+              <div className="co-intern-left">
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#0a2540', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
                   {intern.name.split(' ').map(n => n[0]).join('')}
                 </div>
-                <div>
-                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{intern.name}</p>
-                  <p style={{ margin: '2px 0 0', fontSize: 12, color: '#94a3b8' }}>{intern.internship}</p>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{intern.name}</p>
+                  <p style={{ margin: '2px 0 0', fontSize: 12, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{intern.internship}</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+              <div className="co-intern-right">
                 <div style={{ textAlign: 'right' }}>
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#22c55e' }}>{pct}%</p>
                   <p style={{ margin: 0, fontSize: 11, color: '#94a3b8' }}>Progress</p>
@@ -83,8 +157,8 @@ const CoordinatorOverview = () => {
             const intern = interns.find(i => i.id === sub.internId);
             const task = useStore.getState().tasks.find(t => t.id === sub.taskId);
             return (
-              <div key={sub.id} style={S.row}>
-                <div>
+              <div key={sub.id} className="co-sub-row">
+                <div style={{ minWidth: 0 }}>
                   <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{task?.title}</p>
                   <p style={{ margin: '2px 0 0', fontSize: 12, color: '#94a3b8' }}>by {intern?.name} · {new Date(sub.submittedAt).toLocaleDateString()}</p>
                 </div>

@@ -15,15 +15,11 @@ import Profile from './Profile';
 const S = {
   page: { display: 'flex', flexDirection: 'column' as const, gap: 24 },
   greeting: { marginBottom: 4 },
-  h1: { margin: 0, fontSize: 26, fontWeight: 800, color: '#0a2540', letterSpacing: -0.5 },
-  sub: { margin: '4px 0 0', fontSize: 14, color: '#64748b' },
-  grid3: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 },
   card: { background: '#fff', borderRadius: 12, border: '1px solid #e5eaf0', padding: '20px 24px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' },
   cardLabel: { margin: 0, fontSize: 12, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' as const, letterSpacing: 0.8 },
   cardValue: { margin: '8px 0 0', fontSize: 32, fontWeight: 800, color: '#0a2540' },
   cardSub: { margin: '4px 0 0', fontSize: 12, color: '#94a3b8' },
   sectionTitle: { margin: '0 0 16px', fontSize: 17, fontWeight: 700, color: '#0a2540' },
-  taskRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderRadius: 10, border: '1px solid #f0f4f8', marginBottom: 8, background: '#fafcff' },
   taskTitle: { margin: 0, fontSize: 14, fontWeight: 600, color: '#0f172a' },
   taskMeta: { margin: '2px 0 0', fontSize: 12, color: '#94a3b8' },
   badge: (color: string) => ({ display: 'inline-block', padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: color + '15', color }),
@@ -59,12 +55,66 @@ const InternOverview = () => {
 
   return (
     <div style={S.page}>
+      <style>{`
+        .io-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+        }
+        .io-task-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 16px;
+          border-radius: 10px;
+          border: 1px solid #f0f4f8;
+          margin-bottom: 8px;
+          background: #fafcff;
+          gap: 12px;
+        }
+        .io-task-right {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+        .io-h1 {
+          margin: 0;
+          font-size: 26px;
+          font-weight: 800;
+          color: #0a2540;
+          letter-spacing: -0.5px;
+        }
+        @media (max-width: 700px) {
+          .io-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .io-h1 {
+            font-size: 21px;
+          }
+        }
+        @media (max-width: 480px) {
+          .io-grid {
+            grid-template-columns: 1fr;
+          }
+          .io-task-row {
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+          .io-h1 {
+            font-size: 19px;
+          }
+        }
+      `}</style>
+
       <div style={S.greeting}>
-        <h1 style={S.h1}>Welcome back, {currentUser.name}!</h1>
-        <p style={S.sub}>Frontend Engineering Internship · Here's your progress today.</p>
+        <h1 className="io-h1">Welcome back, {currentUser.name}!</h1>
+        <p style={{ margin: '4px 0 0', fontSize: 14, color: '#64748b' }}>
+          Frontend Engineering Internship · Here's your progress today.
+        </p>
       </div>
 
-      <div style={S.grid3}>
+      <div className="io-grid">
         {/* Progress */}
         <div style={S.card}>
           <p style={S.cardLabel}>Progress</p>
@@ -96,14 +146,14 @@ const InternOverview = () => {
           const color = status === 'approved' ? '#22c55e' : status === 'submitted' ? '#3b82f6' : status === 'revision' ? '#ef4444' : '#f59e0b';
           const label = status === 'approved' ? 'Approved' : status === 'submitted' ? 'Submitted' : status === 'revision' ? 'Revision' : 'Pending';
           return (
-            <div key={task.id} style={S.taskRow}>
-              <div>
+            <div key={task.id} className="io-task-row">
+              <div style={{ minWidth: 0 }}>
                 <p style={S.taskTitle}>{task.title}</p>
                 <p style={S.taskMeta}>Due {new Date(task.dueDate).toLocaleDateString()} · {task.priority} priority</p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="io-task-right">
                 <span style={S.badge(color)}>{label}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#f59e0b' }}>{task.points}pts</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#f59e0b', whiteSpace: 'nowrap' }}>{task.points}pts</span>
               </div>
             </div>
           );

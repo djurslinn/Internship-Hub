@@ -73,6 +73,65 @@ export default function Leaderboard() {
 
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <style>{`
+        .lb-overall-table th, .lb-overall-table td {
+          padding: 16px;
+        }
+        .lb-overall-header {
+          background-color: #F8FAFC;
+          border-bottom: 1px solid #E2E8F0;
+        }
+        .lb-task-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px;
+          border-radius: 8px;
+          gap: 12px;
+        }
+        .lb-task-right {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          color: #64748B;
+          font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+          .lb-overall-table thead {
+            display: none;
+          }
+          .lb-overall-table tr {
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            border-bottom: 1px solid #E2E8F0;
+          }
+          .lb-overall-table td {
+            padding: 4px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .lb-overall-table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #475569;
+            margin-right: 16px;
+          }
+          
+          .lb-task-item {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .lb-task-right {
+            width: 100%;
+            justify-content: space-between;
+            margin-top: 8px;
+          }
+        }
+      `}</style>
+
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '24px' }}>
         <Trophy size={32} color="#4F46E5" style={{ marginRight: '16px' }} />
         <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1E293B', margin: 0 }}>Leaderboard</h1>
@@ -104,7 +163,7 @@ export default function Leaderboard() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', marginBottom: '24px', flexWrap: 'wrap' }}>
         <button
           onClick={() => setActiveTab('overall')}
           style={{
@@ -138,15 +197,15 @@ export default function Leaderboard() {
       </div>
 
       {activeTab === 'overall' && (
-        <div style={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <table className="lb-overall-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead className="lb-overall-header">
               <tr>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#475569', fontWeight: '600' }}>Rank</th>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#475569', fontWeight: '600' }}>Intern</th>
-                <th style={{ padding: '16px', textAlign: 'left', color: '#475569', fontWeight: '600' }}>Program</th>
-                <th style={{ padding: '16px', textAlign: 'right', color: '#475569', fontWeight: '600' }}>Tasks Approved</th>
-                <th style={{ padding: '16px', textAlign: 'right', color: '#475569', fontWeight: '600' }}>Total Points</th>
+                <th style={{ textAlign: 'left', color: '#475569', fontWeight: '600' }}>Rank</th>
+                <th style={{ textAlign: 'left', color: '#475569', fontWeight: '600' }}>Intern</th>
+                <th style={{ textAlign: 'left', color: '#475569', fontWeight: '600' }}>Program</th>
+                <th style={{ textAlign: 'right', color: '#475569', fontWeight: '600' }}>Tasks Approved</th>
+                <th style={{ textAlign: 'right', color: '#475569', fontWeight: '600' }}>Total Points</th>
               </tr>
             </thead>
             <tbody>
@@ -168,15 +227,15 @@ export default function Leaderboard() {
                         transition: 'background-color 0.2s'
                       }}
                     >
-                      <td style={{ padding: '16px', display: 'flex', alignItems: 'center' }}>
+                      <td data-label="Rank" style={{ display: 'flex', alignItems: 'center' }}>
                         {getRankIcon(index)}
                       </td>
-                      <td style={{ padding: '16px', fontWeight: '500', color: '#1E293B' }}>
+                      <td data-label="Intern" style={{ fontWeight: '500', color: '#1E293B' }}>
                         {intern.name} {isCurrentUser && <span style={{ marginLeft: '8px', fontSize: '12px', backgroundColor: '#4F46E5', color: '#fff', padding: '2px 6px', borderRadius: '4px' }}>You</span>}
                       </td>
-                      <td style={{ padding: '16px', color: '#64748B' }}>{intern.internship}</td>
-                      <td style={{ padding: '16px', textAlign: 'right', color: '#475569' }}>{intern.approvedTasksCount}</td>
-                      <td style={{ padding: '16px', textAlign: 'right', fontWeight: 'bold', color: '#4F46E5' }}>{intern.points}</td>
+                      <td data-label="Program" style={{ color: '#64748B' }}>{intern.internship}</td>
+                      <td data-label="Tasks Approved" style={{ textAlign: 'right', color: '#475569' }}>{intern.approvedTasksCount}</td>
+                      <td data-label="Total Points" style={{ textAlign: 'right', fontWeight: 'bold', color: '#4F46E5' }}>{intern.points}</td>
                     </tr>
                   );
                 })
@@ -209,14 +268,10 @@ export default function Leaderboard() {
                       return (
                         <div 
                           key={completion.id} 
+                          className="lb-task-item"
                           style={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'center',
-                            padding: '12px',
                             backgroundColor: isCurrentUser ? '#EEF2FF' : (index === 0 ? '#FEF3C7' : '#F8FAFC'),
                             border: index === 0 ? '1px solid #FCD34D' : '1px solid #E2E8F0',
-                            borderRadius: '8px'
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -226,14 +281,14 @@ export default function Leaderboard() {
                               <CheckCircle size={20} color="#10B981" />
                             )}
                             <div>
-                              <div style={{ fontWeight: '600', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div style={{ fontWeight: '600', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                 {completion.internName}
                                 {isCurrentUser && <span style={{ fontSize: '10px', backgroundColor: '#4F46E5', color: '#fff', padding: '2px 4px', borderRadius: '4px' }}>You</span>}
                                 {index === 0 && <span style={{ fontSize: '10px', backgroundColor: '#F59E0B', color: '#fff', padding: '2px 4px', borderRadius: '4px' }}>First!</span>}
                               </div>
                             </div>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#64748B', fontSize: '14px' }}>
+                          <div className="lb-task-right">
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               <Calendar size={14} />
                               {new Date(completion.submittedAt).toLocaleDateString()}

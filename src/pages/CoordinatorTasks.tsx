@@ -76,7 +76,64 @@ export default function CoordinatorTasks() {
 
   return (
     <div style={S.page}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <style>{`
+        .ct-table-header {
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          border-bottom: 1px solid #f0f4f8;
+          font-size: 11px;
+          font-weight: 700;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+        }
+        .ct-table-row {
+          display: flex;
+          align-items: center;
+          padding: 14px 16px;
+          border-bottom: 1px solid #f8fafc;
+          gap: 16px;
+        }
+        .ct-col-task { flex: 2; min-width: 0; }
+        .ct-col-prog { flex: 1; min-width: 0; color: #64748b; font-weight: 500; font-size: 13px; }
+        .ct-col-date { flex: 1; min-width: 0; color: #64748b; font-size: 13px; }
+        .ct-col-prio { width: 80px; flex-shrink: 0; }
+        .ct-col-pts { width: 60px; flex-shrink: 0; font-weight: 700; color: #f59e0b; font-size: 13px; }
+        .ct-col-acts { width: 60px; flex-shrink: 0; display: flex; gap: 6px; justify-content: flex-end; }
+        
+        @media (max-width: 768px) {
+          .ct-table-header {
+            display: none;
+          }
+          .ct-table-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 16px;
+          }
+          .ct-col-task {
+            width: 100%;
+          }
+          .ct-col-prog, .ct-col-date, .ct-col-prio, .ct-col-pts {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .ct-col-prog::before { content: "Program:"; font-weight: 600; color: #0f172a; }
+          .ct-col-date::before { content: "Due Date:"; font-weight: 600; color: #0f172a; }
+          .ct-col-prio::before { content: "Priority:"; font-weight: 600; color: #0f172a; }
+          .ct-col-pts::before { content: "Points:"; font-weight: 600; color: #0f172a; }
+          .ct-col-acts {
+            width: 100%;
+            justify-content: flex-start;
+            margin-top: 8px;
+          }
+        }
+      `}</style>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <h1 style={S.h1}>Manage Tasks</h1>
         <button onClick={handleAddNew} style={S.btn(true)}><Plus size={15} /> Create Task</button>
       </div>
@@ -93,7 +150,7 @@ export default function CoordinatorTasks() {
               <label style={S.label}>Description</label>
               <textarea style={S.textarea} rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Describe what needs to be done..." />
             </div>
-            <div>
+            <div style={{ gridColumn: '1/-1' }}>
               <label style={S.label}>Internship Program (Required)</label>
               <select style={S.select} value={formData.internshipId || ''} onChange={e => setFormData({ ...formData, internshipId: e.target.value })}>
                 {internships.length === 0 && <option value="">No internships available</option>}
@@ -125,11 +182,11 @@ export default function CoordinatorTasks() {
       )}
 
       <div style={S.card}>
-        <div style={{ padding: '16px', borderBottom: '1px solid #f0f4f8', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ padding: '16px', borderBottom: '1px solid #f0f4f8', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <Filter size={16} color="#64748b" />
           <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>Filter by Internship:</span>
           <select 
-            style={{ ...S.select, width: 'auto', padding: '6px 32px 6px 12px' }} 
+            style={{ ...S.select, width: 'auto', padding: '6px 32px 6px 12px', flex: '1' }} 
             value={filterInternshipId} 
             onChange={e => setFilterInternshipId(e.target.value)}
           >
@@ -137,46 +194,47 @@ export default function CoordinatorTasks() {
             {internships.map(i => <option key={i.id} value={i.id}>{i.title}</option>)}
           </select>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid #f0f4f8' }}>
-              {['Task', 'Program', 'Due Date', 'Priority', 'Points', ''].map(h => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 0.6 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
+        
+        <div style={{ width: '100%' }}>
+          <div className="ct-table-header">
+            <div className="ct-col-task">Task</div>
+            <div className="ct-col-prog">Program</div>
+            <div className="ct-col-date">Due Date</div>
+            <div className="ct-col-prio">Priority</div>
+            <div className="ct-col-pts">Points</div>
+            <div className="ct-col-acts"></div>
+          </div>
+          
+          <div>
             {filteredTasks.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#94a3b8' }}>No tasks match the selected criteria.</td></tr>
+              <div style={{ padding: '32px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>No tasks match the selected criteria.</div>
             ) : filteredTasks.map(task => {
               const program = internships.find(i => i.id === task.internshipId);
               return (
-                <tr key={task.id} style={{ borderBottom: '1px solid #f8fafc' }}>
-                  <td style={{ padding: '14px 16px' }}>
-                    <p style={{ margin: 0, fontWeight: 600, color: '#0f172a' }}>{task.title}</p>
+                <div key={task.id} className="ct-table-row">
+                  <div className="ct-col-task">
+                    <p style={{ margin: 0, fontWeight: 600, color: '#0f172a', fontSize: 13 }}>{task.title}</p>
                     <p style={{ margin: '2px 0 0', fontSize: 12, color: '#94a3b8' }}>{task.description?.slice(0, 60)}...</p>
-                  </td>
-                  <td style={{ padding: '14px 16px', color: '#64748b', fontWeight: 500 }}>
+                  </div>
+                  <div className="ct-col-prog">
                     {program ? program.title : 'Unknown'}
-                  </td>
-                  <td style={{ padding: '14px 16px', color: '#64748b' }}>
+                  </div>
+                  <div className="ct-col-date">
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Calendar size={12} /> {new Date(task.dueDate).toLocaleDateString()}</span>
-                  </td>
-                  <td style={{ padding: '14px 16px' }}>
+                  </div>
+                  <div className="ct-col-prio">
                     <span style={{ fontWeight: 600, fontSize: 12, color: task.priority === 'high' ? '#ef4444' : task.priority === 'medium' ? '#f59e0b' : '#22c55e', textTransform: 'capitalize' }}>{task.priority}</span>
-                  </td>
-                  <td style={{ padding: '14px 16px', fontWeight: 700, color: '#f59e0b' }}>{task.points}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => handleEdit(task)} style={S.iconBtn()}><Edit2 size={14} /></button>
-                      <button onClick={() => deleteTask(task.id)} style={S.iconBtn(true)}><Trash2 size={14} /></button>
-                    </div>
-                  </td>
-                </tr>
+                  </div>
+                  <div className="ct-col-pts">{task.points}</div>
+                  <div className="ct-col-acts">
+                    <button onClick={() => handleEdit(task)} style={S.iconBtn()}><Edit2 size={14} /></button>
+                    <button onClick={() => deleteTask(task.id)} style={S.iconBtn(true)}><Trash2 size={14} /></button>
+                  </div>
+                </div>
               )
             })}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
     </div>
   );

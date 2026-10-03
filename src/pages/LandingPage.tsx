@@ -59,6 +59,9 @@ export default function LandingPage() {
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const enter = (role: 'intern' | 'coordinator') => {
+    if (window.innerWidth <= 768) {
+      alert("Please use desktop mode for a better viewing experience.");
+    }
     setRole(role);
     navigate(`/${role}`);
   };
